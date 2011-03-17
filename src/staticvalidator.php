@@ -16,6 +16,13 @@
  */
 
 /**
+ * Dummy Exception extension.
+ */
+class StaticValidatorException extends Exception {
+
+}
+
+/**
  * Main class to check if variable satisfies certain conditions.
  *
  * @author Dawid Spiechowicz <spiechu@gmail.com>
@@ -36,44 +43,41 @@ class StaticValidator {
             foreach($partialNames as $funcName) {
                 $funcName = self::extractFunction($funcName);
                 if (!method_exists(__CLASS__, $funcName['funkcja'])) {
-                    throw new Exception("Function {$funcName} doesn't exist!");
+                    throw new StaticValidatorException("Function {$funcName} doesn't exist!");
                 }
                 // check if given params are array of values to check
                 if (is_array($args[0])) {
                     foreach ($args[0] as $arg) {
-                        // gwozdz programu! wywolujemy
-                        // rozpracowana funkcje i podajemy ewentualne
-                        // dodatkowe parametry
+                        // firing up extracted function name (if args are array)
                         if (self::$funcName['funkcja']($arg, $funcName['args']) == false) {
                             return false;
                         }
                     }
                 }
-                // jezeli parametr nie jest tablica
+                // firing up extracted function name (if args are NOT array)
                 else {
                     if (self::$funcName['funkcja']($args[0], $funcName['args']) == false) {
                         return false;
                     }
                 }
             }
-            // jezeli dolecialo az tutaj tzn., ze wartosc poprawnie zwalidowana
+            // all extracted functions passed, args are valid
             return true;
         }
-        // wylapie zle skonstruowany poczatek nazwy funkcji
-        throw new Exception("Próba wywołania nierozpoznanej funkcji {$name}");
+        // catches wrong function name at start
+        throw new StaticValidatorException("Unknown function {$name}");
     }
 
     /**
-     * Szuka znanych sobie funkcji skladowych do wywolania.
-     * @param string $name
-     * @return array tablica z nazwa funkcji i parametrami
+     * Searches for known validation functions.
+     * @param string $name name to search
+     * @return array assoc table with func name and optional parameters
      */
     protected static function extractFunction($name) {
-        // calosc na male litery
         $name = strtolower($name);
-        // jezeli zaczyna sie od 'not'
+        // if name starts with 'not'
         if (stripos($name, 'not') === 0) {
-            // ciachnij 'not'
+            // strip 'not'
             $name = substr($name, 3);
             return array(
                     'funkcja' => 'isOrNot',
@@ -82,7 +86,7 @@ class StaticValidator {
                             'funcname' => $name
             ));
         }
-        // to samo jezeli zaczyna sie od 'is'
+        // the same if name starts with 'is'
         elseif (stripos($name, 'is') === 0) {
             $name = substr($name, 2);
             return array(
@@ -120,8 +124,7 @@ class StaticValidator {
             $name = substr($name, 7);
             return array(
                     'funkcja' => 'between',
-                    // z tego co zostalo
-                    // rozwalamy wartosci przy 'and'
+                    // explode numbers at front and end of 'and'
                     'args' => explode('and', $name));
         }
         elseif (stripos($name, 'minlength') === 0) {
@@ -145,39 +148,37 @@ class StaticValidator {
                     'funkcja' => 'only',
                     'args' => substr($name,4));
         }
-        // jezeli doszlo az tutaj to
-        // nierozpoznano funkcji i
-        // wywalam wyjatek
+        // if it comes here, function name can't be found
         else {
-            throw new Exception("Nie rozpoznano funkcji {$name}");
+            throw new StaticValidatorException("Couldn't reslove function name {$name}");
         }
     }
 
-    public static function eqLtGt($var, array $argz) {
-        if (!is_numeric($var)) throw new Exception("Sprawdzana wartosc {$var} nie jest liczba!");
-        if (!is_numeric($argz['warunek'])) throw new Exception("Warunek {$argz['warunek']} nie jest liczba!");
-        switch ($argz['func']) {
+    protected static function eqLtGt($var, array $args) {
+        if (!is_numeric($var)) throw new StaticValidatorException("Value {$var} is not numeric");
+        if (!is_numeric($args['warunek'])) throw new StaticValidatorException("Condition {$args['warunek']} is not numeric");
+        switch ($args['func']) {
             case 'gt':
-                return ($var > $argz['warunek']);
+                return ($var > $args['warunek']);
                 break;
             case 'lt':
-                return ($var < $argz['warunek']);
+                return ($var < $args['warunek']);
                 break;
             case 'eq':
-                return ($var === $argz['warunek']);
+                return ($var === $args['warunek']);
                 break;
             default:
-                throw new Exception("Nie rozpoznano warunku eq lt gt {$argz['func']}");
+                throw new StaticValidatorException("Couldn't resolve condition (eq|lt|gt) at {$args['func']}");
         }
     }
 
-    public static function isOrNot($var, array $argz) {
-        $not = (isset($argz['not'])
-                        && is_bool($argz['not']))
-                ? $argz['not']
+    protected static function isOrNot($var, array $args) {
+        $not = (isset($args['not'])
+                        && is_bool($args['not']))
+                ? $args['not']
                 : false;
-        $funcname = (isset($argz['funcname']))
-                ? (string) $argz['funcname']
+        $funcname = (isset($args['funcname']))
+                ? (string) $args['funcname']
                 : '';
         $funcname = strtolower($funcname);
         switch($funcname) {
@@ -197,50 +198,45 @@ class StaticValidator {
                 $result = is_string($var);
                 break;
             default:
-                throw new Exception("Nie rozpoznano argumentu {$funcname}");
-                break;
+                throw new StaticValidatorException("Couldn't resolve argument {$funcname}");
         }
         return ($not === true) ? !$result : $result;
     }
 
     /**
-     * Sprawdza czy $var znajduje sie w przedziale $arg[0] <= $var <= arg[1].
-     * @param numeric $var
-     * @param array $arg $arg[0] i $arg[1] typu numeric
+     * Checks if $var stands in range $arg[0] <= $var <= arg[1].
+     * @param numeric $var to check
+     * @param array $arg $arg[0] i $arg[1] numeric type
      * @return bool
      */
-    public static function between($var, array $arg) {
-        if (!is_numeric($var)) throw new Exception("Sprawdzana wartosc {$var} nie jest liczba!");
-        if (!is_numeric($arg[0]) || !is_numeric($arg[1])) throw new Exception("Warunek {$arg[0]} lub {$arg[1]} nie jest liczba!");
+    protected static function between($var, array $arg) {
+        if (!is_numeric($var)) throw new StaticValidatorException("Value {$var} is not numeric");
+        if (!is_numeric($arg[0]) || !is_numeric($arg[1])) throw new StaticValidatorException("Condition {$arg[0]} or {$arg[1]} is not numeric");
         return (($var >= $arg[0]) && ($var <= $arg[1]));
     }
 
     /**
-     * Sprawdza min i max dlugosc ciagu $var.
-     * @param string $var
-     * @param int $arg
+     * Checks if $var string is between given lenght.
+     * @param string $var to check
+     * @param array $args
      * @return bool
      */
-    public static function minMaxLength($var, array $argz) {
-        if (!is_string($var)) throw new Exception("Sprawdzana wartosc {$var} nie jest stringiem!");
-        if (!is_numeric($argz['warunek'])) throw new Exception("Warunek {$argz['warunek']} nie jest liczba calkowita!");
-        switch ($argz['func']) {
+    protected static function minMaxLength($var, array $args) {
+        if (!is_string($var)) throw new StaticValidatorException("Checked value {$var} is not a string");
+        if (!is_int($args['warunek'])) throw new StaticValidatorException("Condition {$args['warunek']} is not integer");
+        switch ($args['func']) {
             case 'min':
-                return (strlen($var) >= (int) $argz['warunek']);
+                return (strlen($var) >= (int) $args['warunek']);
                 break;
             case 'max':
-                return (strlen($var) <= (int) $argz['warunek']);
+                return (strlen($var) <= (int) $args['warunek']);
                 break;
             default:
-                throw new Exception("Nie rozpoznano warunku {$argz['func']}");
-                break;
+                throw new StaticValidatorException("Couldn't resolve condition {$args['func']}");
         }
     }
 
-    public static function only($var, $arg) {
-        $arg = strtolower($arg);
-        $alg = '';
-        $var = (string) $var;
+    protected static function only($var, $arg) {
         switch($arg) {
             case 'letters':
                 if (function_exists('ctype_alpha')) {
@@ -266,6 +262,8 @@ class StaticValidator {
                     $alg = '/^[A-Z0-9]{1,}$/i';
                 }
                 break;
+            default:
+                throw new StaticValidatorException("Couldn't resolve condition {$arg}");
         }
         if (preg_match_all($alg, $var, $match) === 1) {
             return true;
