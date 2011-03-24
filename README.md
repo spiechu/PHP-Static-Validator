@@ -16,9 +16,30 @@ For exaple `StaticValidator::check_notNull_isInt_gt5($testedVariable);` we can t
 
 We can distinguish three main components in PHP Static Validator:
 
-- simple wrappers (for eg. isSet, notSet, isNull, notNull, isInt, notInt, isString, notString)
-- regular expressions based (for eg. onlyLetters, onlyNumbers)
-- magic functions (for eg. eq3, gt3, lt3, minLength5)
+1. simple wrappers (for eg. isSet, notSet, isNull, notNull, isInt, notInt, isString, notString)
+2. regular expressions based (for eg. onlyLetters, onlyNumbers)
+3. magic functions (for eg. eq3, gt3, lt3, minLength5)
+
+Highly recommended way of constructing magic method name is from broadest condition to narrowest. For eg. `notNull` is broader condition than `isInt`, which is broader than `gt5`.
+
+### Complete list of functions
+1. Wrappers:
+    - [is|not]Set
+    - [is|not]Null
+    - [is|not]Empty
+    - [is|not]Int
+    - [is|not]String
+2. Regular expressions:
+    - onlyLetters
+    - onlyNumbers
+    - onlyAlnums
+3. Magic functions:
+    - lt# - less than _number_
+    - gt# - greater than _number_
+    - eq# - equals to _number_
+    - between#and# - matches range _number_
+    - min# - minimum string length
+    - max# - maximum string length
 
 ## Known Issues
 
