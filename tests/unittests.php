@@ -3,12 +3,18 @@ require_once 'PHPUnit/Framework.php';
 require_once __DIR__ . '/../src/staticvalidator.php';
 
 class StaticValidatorTestCase extends PHPUnit_Framework_TestCase {
+
     protected $errorLevel = null;
-    
+
     const EMPTY_VALUE = '';
+    const NULL_VALUE  = null;
     const INT_ZERO = 0;
     const INT_POS = 5;
     const INT_NEG = -5;
+    const STRING_LETTERS = 'abcdef';
+    const STRING_NUMBERS = '12345';
+    const STRING_ALNUMS  = 'abcdef12345';
+    const STRING_ADDITIONAL_CHARS  = ' _.,;';
 
     protected function suppressNotices() {
         $this->errorLevel = error_reporting();
@@ -49,5 +55,35 @@ class StaticValidatorTestCase extends PHPUnit_Framework_TestCase {
         $this->assertFalse(StaticValidator::check_isSet($unset));
         $this->assertTrue(StaticValidator::check_notSet($unset));
         $this->endNoticeSuppression();
+        $this->assertTrue(StaticValidator::check_isSet(self::EMPTY_VALUE));
+        $this->assertFalse(StaticValidator::check_notSet(self::EMPTY_VALUE));
+    }
+
+    public function testEmpty() {
+        $this->assertTrue(StaticValidator::check_isEmpty(self::EMPTY_VALUE));
+        $this->assertFalse(StaticValidator::check_isEmpty(self::STRING_LETTERS));
+        $this->assertTrue(StaticValidator::check_notEmpty(self::STRING_LETTERS));
+        $this->assertFalse(StaticValidator::check_notEmpty(self::EMPTY_VALUE));
+    }
+
+    public function testNull() {
+        $this->assertTrue(StaticValidator::check_isNull(self::NULL_VALUE));
+        $this->assertFalse(StaticValidator::check_isNull(self::INT_NEG));
+        $this->assertTrue(StaticValidator::check_notNull(self::EMPTY_VALUE));
+        $this->assertFalse(StaticValidator::check_notNull(self::NULL_VALUE));
+    }
+
+    public function testInt() {
+        $this->assertTrue(StaticValidator::check_isInt(self::INT_POS));
+        $this->assertFalse(StaticValidator::check_isInt(self::STRING_NUMBERS));
+        $this->assertFalse(StaticValidator::check_notInt(self::INT_POS));
+        $this->assertTrue(StaticValidator::check_notInt(self::STRING_NUMBERS));
+    }
+
+    public function testString() {
+        $this->assertTrue(StaticValidator::check_isString(self::STRING_ADDITIONAL_CHARS));
+        $this->assertFalse(StaticValidator::check_isString(self::INT_NEG));
+        $this->assertTrue(StaticValidator::check_notString(self::INT_POS));
+        $this->assertFalse(StaticValidator::check_notString(self::STRING_ADDITIONAL_CHARS));
     }
 }
