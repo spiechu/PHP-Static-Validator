@@ -95,4 +95,14 @@ class StaticValidatorTestCase extends PHPUnit_Framework_TestCase {
         $this->assertTrue(StaticValidator::check_notString(self::INT_POS));
         $this->assertFalse(StaticValidator::check_notString(self::STRING_ADDITIONAL_CHARS));
     }
+    
+    public function testGtCondition() {
+        $this->assertFalse(StaticValidator::check_gt1(1));
+        $this->assertTrue(StaticValidator::check_gt1(2));
+        $this->assertTrue(StaticValidator::check_gt1(1.1));
+        $this->assertFalse(StaticValidator::check_gt1(0));
+        $this->assertFalse(StaticValidator::check_gt1(-1));
+        $this->setExpectedException('StaticValidatorException');
+        $this->assertFalse(StaticValidator::check_gt1('2'));
+    }
 }
