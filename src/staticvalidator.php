@@ -164,7 +164,7 @@ class StaticValidator {
                 return ($var < $args['warunek']);
                 break;
             case 'eq':
-                return ($var === $args['warunek']);
+                return ($var == $args['warunek']);
                 break;
             default:
                 throw new StaticValidatorException("Couldn't resolve condition (eq|lt|gt) at {$args['func']}");
