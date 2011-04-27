@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2011 Dawid Spiechowicz
  *
@@ -19,7 +20,7 @@
  * Dummy Exception extension.
  */
 class StaticValidatorException extends Exception {
-
+    
 }
 
 /**
@@ -28,6 +29,7 @@ class StaticValidatorException extends Exception {
  * @author Dawid Spiechowicz <spiechu@gmail.com>
  */
 class StaticValidator {
+
     /**
      * Responds to methods starting with 'check_'.
      * Use '_' as method part separator.
@@ -40,23 +42,23 @@ class StaticValidator {
         if (stripos($name, 'check_') === 0) {
             $name = substr($name, 6);
             $partialNames = explode('_', $name);
-            foreach($partialNames as $funcName) {
+            foreach ($partialNames as $funcName) {
                 $funcName = self::extractFunction($funcName);
-                if (!method_exists(__CLASS__, $funcName['funkcja'])) {
+                if (!method_exists(__CLASS__, $funcName['function'])) {
                     throw new StaticValidatorException("Function {$funcName} doesn't exist!");
                 }
                 // check if given params are array of values to check
                 if (is_array($args[0])) {
                     foreach ($args[0] as $arg) {
                         // firing up extracted function name (if args are array)
-                        if (self::$funcName['funkcja']($arg, $funcName['args']) == false) {
+                        if (self::$funcName['function']($arg, $funcName['args']) == false) {
                             return false;
                         }
                     }
                 }
                 // firing up extracted function name (if args are NOT array)
                 else {
-                    if (self::$funcName['funkcja']($args[0], $funcName['args']) == false) {
+                    if (self::$funcName['function']($args[0], $funcName['args']) == false) {
                         return false;
                     }
                 }
@@ -80,73 +82,66 @@ class StaticValidator {
             // strip 'not'
             $name = substr($name, 3);
             return array(
-                    'funkcja' => 'isOrNot',
-                    'args' => array(
-                            'not' => true,
-                            'funcname' => $name
+                'function' => 'isOrNot',
+                'args' => array(
+                    'not' => true,
+                    'funcname' => $name
             ));
         }
         // the same if name starts with 'is'
         elseif (stripos($name, 'is') === 0) {
             $name = substr($name, 2);
             return array(
-                    'funkcja' => 'isOrNot',
-                    'args' => array(
-                            'not' => false,
-                            'funcname' => $name
+                'function' => 'isOrNot',
+                'args' => array(
+                    'not' => false,
+                    'funcname' => $name
             ));
-        }
-        elseif (stripos($name, 'gt') === 0) {
+        } elseif (stripos($name, 'gt') === 0) {
             return array(
-                    'funkcja' => 'eqLtGt',
-                    'args' => array(
-                            'func' => 'gt',
-                            'warunek' => substr($name, 2)
+                'function' => 'eqLtGt',
+                'args' => array(
+                    'func' => 'gt',
+                    'warunek' => substr($name, 2)
             ));
-        }
-        elseif (stripos($name, 'lt') === 0) {
+        } elseif (stripos($name, 'lt') === 0) {
             return array(
-                    'funkcja' => 'eqLtGt',
-                    'args' => array(
-                            'func' => 'lt',
-                            'warunek' => substr($name, 2)
+                'function' => 'eqLtGt',
+                'args' => array(
+                    'func' => 'lt',
+                    'warunek' => substr($name, 2)
             ));
-        }
-        elseif (stripos($name, 'eq') === 0) {
+        } elseif (stripos($name, 'eq') === 0) {
             return array(
-                    'funkcja' => 'eqLtGt',
-                    'args' => array(
-                            'func' => 'eq',
-                            'warunek' => substr($name, 2)
+                'function' => 'eqLtGt',
+                'args' => array(
+                    'func' => 'eq',
+                    'warunek' => substr($name, 2)
             ));
-        }
-        elseif (stripos($name, 'between') === 0) {
+        } elseif (stripos($name, 'between') === 0) {
             $name = substr($name, 7);
             return array(
-                    'funkcja' => 'between',
-                    // explode numbers at front and end of 'and'
-                    'args' => explode('and', $name));
-        }
-        elseif (stripos($name, 'minlength') === 0) {
+                'function' => 'between',
+                // explode numbers at front and end of 'and'
+                'args' => explode('and', $name));
+        } elseif (stripos($name, 'minlength') === 0) {
             return array(
-                    'funkcja' => 'minMaxLength',
-                    'args' => array(
-                            'func' => 'min',
-                            'warunek' => substr($name, 9)
+                'function' => 'minMaxLength',
+                'args' => array(
+                    'func' => 'min',
+                    'warunek' => substr($name, 9)
             ));
-        }
-        elseif (stripos($name, 'maxlength') === 0) {
+        } elseif (stripos($name, 'maxlength') === 0) {
             return array(
-                    'funkcja' => 'minMaxLength',
-                    'args' => array(
-                            'func' => 'max',
-                            'warunek' => substr($name, 9)
+                'function' => 'minMaxLength',
+                'args' => array(
+                    'func' => 'max',
+                    'warunek' => substr($name, 9)
             ));
-        }
-        elseif (stripos($name, 'only') === 0) {
+        } elseif (stripos($name, 'only') === 0) {
             return array(
-                    'funkcja' => 'only',
-                    'args' => substr($name,4));
+                'function' => 'only',
+                'args' => substr($name, 4));
         }
         // if it comes here, function name can't be found
         else {
@@ -155,8 +150,10 @@ class StaticValidator {
     }
 
     protected static function eqLtGt($var, array $args) {
-        if (!is_numeric($var)) throw new StaticValidatorException("Value {$var} is not numeric");
-        if (!is_numeric($args['warunek'])) throw new StaticValidatorException("Condition {$args['warunek']} is not numeric");
+        if (!is_numeric($var))
+            throw new StaticValidatorException("Value {$var} is not numeric");
+        if (!is_numeric($args['warunek']))
+            throw new StaticValidatorException("Condition {$args['warunek']} is not numeric");
         switch ($args['func']) {
             case 'gt':
                 return ($var > $args['warunek']);
@@ -174,14 +171,10 @@ class StaticValidator {
 
     protected static function isOrNot($var, array $args) {
         $not = (isset($args['not'])
-                        && is_bool($args['not']))
-                ? $args['not']
-                : false;
-        $funcname = (isset($args['funcname']))
-                ? (string) $args['funcname']
-                : '';
+                && is_bool($args['not'])) ? $args['not'] : false;
+        $funcname = (isset($args['funcname'])) ? (string) $args['funcname'] : '';
         $funcname = strtolower($funcname);
-        switch($funcname) {
+        switch ($funcname) {
             case 'null':
                 $result = is_null($var);
                 break;
@@ -189,7 +182,12 @@ class StaticValidator {
                 $result = isset($var);
                 break;
             case 'empty':
-                $result = empty($var);
+                if ($var === 0) {
+                    $result = false;
+                }
+                else {
+                    $result = empty($var);
+                }
                 break;
             case 'int':
                 $result = is_int($var);
@@ -210,8 +208,10 @@ class StaticValidator {
      * @return bool
      */
     protected static function between($var, array $arg) {
-        if (!is_numeric($var)) throw new StaticValidatorException("Value {$var} is not numeric");
-        if (!is_numeric($arg[0]) || !is_numeric($arg[1])) throw new StaticValidatorException("Condition {$arg[0]} or {$arg[1]} is not numeric");
+        if (!is_numeric($var))
+            throw new StaticValidatorException("Value {$var} is not numeric");
+        if (!is_numeric($arg[0]) || !is_numeric($arg[1]))
+            throw new StaticValidatorException("Condition {$arg[0]} or {$arg[1]} is not numeric");
         return (($var >= $arg[0]) && ($var <= $arg[1]));
     }
 
@@ -222,8 +222,10 @@ class StaticValidator {
      * @return bool
      */
     protected static function minMaxLength($var, array $args) {
-        if (!is_string($var)) throw new StaticValidatorException("Checked value {$var} is not a string");
-        if (!is_int($args['warunek'])) throw new StaticValidatorException("Condition {$args['warunek']} is not integer");
+        if (!is_string($var))
+            throw new StaticValidatorException("Checked value {$var} is not a string");
+        if (!is_int($args['warunek']))
+            throw new StaticValidatorException("Condition {$args['warunek']} is not integer");
         switch ($args['func']) {
             case 'min':
                 return (strlen($var) >= (int) $args['warunek']);
@@ -237,28 +239,25 @@ class StaticValidator {
     }
 
     protected static function only($var, $arg) {
-        switch($arg) {
+        switch ($arg) {
             case 'letters':
                 if (function_exists('ctype_alpha')) {
                     return ctype_alpha($var);
-                }
-                else {
+                } else {
                     $alg = '/^[A-Z]{1,}$/i';
                 }
                 break;
             case 'numbers':
                 if (function_exists('ctype_digit')) {
                     return ctype_digit($var);
-                }
-                else {
+                } else {
                     $alg = '/^[0-9]{1,}$/';
                 }
                 break;
             case 'alnums':
                 if (function_exists('ctype_alnum')) {
                     return ctype_alnum($var);
-                }
-                else {
+                } else {
                     $alg = '/^[A-Z0-9]{1,}$/i';
                 }
                 break;
@@ -267,9 +266,9 @@ class StaticValidator {
         }
         if (preg_match_all($alg, $var, $match) === 1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
+
 }
