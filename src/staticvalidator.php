@@ -150,6 +150,8 @@ class StaticValidator {
     }
 
     protected static function eqLtGt($var, array $args) {
+        if (is_string($var))
+            throw new StaticValidatorException("Value {$var} is string, cast it to numeric");
         if (!is_numeric($var))
             throw new StaticValidatorException("Value {$var} is not numeric");
         if (!is_numeric($args['warunek']))
