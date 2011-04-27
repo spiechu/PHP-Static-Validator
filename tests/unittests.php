@@ -79,6 +79,15 @@ class StaticValidatorTestCase extends PHPUnit_Framework_TestCase {
         $this->assertFalse(StaticValidator::check_notInt(self::INT_POS));
         $this->assertTrue(StaticValidator::check_notInt(self::STRING_NUMBERS));
     }
+    
+    public function testZeroValue() {
+        $this->assertTrue(StaticValidator::check_isInt(self::INT_ZERO));
+        $this->assertFalse(StaticValidator::check_notInt(self::INT_ZERO));
+        $this->assertFalse(StaticValidator::check_isNull(self::INT_ZERO));
+        $this->assertTrue(StaticValidator::check_notNull(self::INT_ZERO));
+        $this->assertTrue(StaticValidator::check_notEmpty(self::INT_ZERO));
+        $this->assertFalse(StaticValidator::check_isEmpty(self::INT_ZERO));
+    }
 
     public function testString() {
         $this->assertTrue(StaticValidator::check_isString(self::STRING_ADDITIONAL_CHARS));
