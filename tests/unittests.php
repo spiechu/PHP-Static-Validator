@@ -105,4 +105,23 @@ class StaticValidatorTestCase extends PHPUnit_Framework_TestCase {
         $this->setExpectedException('StaticValidatorException');
         $this->assertFalse(StaticValidator::check_gt1('2'));
     }
+    
+    public function testLtCondition() {
+        $this->assertFalse(StaticValidator::check_lt1(1));
+        $this->assertTrue(StaticValidator::check_lt1(0));
+        $this->assertFalse(StaticValidator::check_lt1(2));
+        $this->assertTrue(StaticValidator::check_lt1(0.9));
+        $this->assertTrue(StaticValidator::check_lt1(-1));
+        $this->setExpectedException('StaticValidatorException');
+        $this->assertFalse(StaticValidator::check_lt1('2'));
+    }
+    
+    public function testEqCondition() {
+        $this->assertTrue(StaticValidator::check_eq1(1));
+        $this->assertFalse(StaticValidator::check_eq1(0));
+        $this->assertFalse(StaticValidator::check_eq1(-1));
+        $this->assertFalse(StaticValidator::check_eq1(2));
+        $this->setExpectedException('StaticValidatorException');
+        $this->assertFalse(StaticValidator::check_eq1('1'));
+    }
 }
