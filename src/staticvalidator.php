@@ -19,7 +19,16 @@
 /**
  * Dummy Exception extension.
  */
-class StaticValidatorException extends Exception {
+class StaticValidatorException extends Exception
+{
+    
+}
+
+/**
+ * Thrown when args or checked variables have wrong types.
+ */
+class StaticValidatorDataTypeMismatchException extends StaticValidatorException
+{
     
 }
 
@@ -28,7 +37,8 @@ class StaticValidatorException extends Exception {
  *
  * @author Dawid Spiechowicz <spiechu@gmail.com>
  */
-class StaticValidator {
+class StaticValidator
+{
 
     /**
      * Responds to methods starting with 'check_'.
@@ -38,27 +48,36 @@ class StaticValidator {
      * @param array $args given params to unexisting method
      * @return bool true if all conditions satisfied
      */
-    public static function __callStatic($name, $args) {
-        if (stripos($name, 'check_') === 0) {
-            $name = substr($name, 6);
-            $partialNames = explode('_', $name);
-            foreach ($partialNames as $funcName) {
+    public static function __callStatic($name , $args)
+    {
+        if (stripos($name , 'check_') === 0)
+        {
+            $name = substr($name , 6);
+            $partialNames = explode('_' , $name);
+            foreach ($partialNames as $funcName)
+            {
                 $funcName = self::extractFunction($funcName);
-                if (!method_exists(__CLASS__, $funcName['function'])) {
+                if (!method_exists(__CLASS__ , $funcName['function']))
+                {
                     throw new StaticValidatorException("Function {$funcName} doesn't exist!");
                 }
                 // check if given params are array of values to check
-                if (is_array($args[0])) {
-                    foreach ($args[0] as $arg) {
+                if (is_array($args[0]))
+                {
+                    foreach ($args[0] as $arg)
+                    {
                         // firing up extracted function name (if args are array)
-                        if (self::$funcName['function']($arg, $funcName['args']) == false) {
+                        if (self::$funcName['function']($arg , $funcName['args']) == false)
+                        {
                             return false;
                         }
                     }
                 }
                 // firing up extracted function name (if args are NOT array)
-                else {
-                    if (self::$funcName['function']($args[0], $funcName['args']) == false) {
+                else
+                {
+                    if (self::$funcName['function']($args[0] , $funcName['args']) == false)
+                    {
                         return false;
                     }
                 }
@@ -75,88 +94,108 @@ class StaticValidator {
      * @param string $name name to search
      * @return array assoc table with func name and optional parameters
      */
-    protected static function extractFunction($name) {
+    protected static function extractFunction($name)
+    {
         $name = strtolower($name);
         // if name starts with 'not'
-        if (stripos($name, 'not') === 0) {
+        if (stripos($name , 'not') === 0)
+        {
             // strip 'not'
-            $name = substr($name, 3);
+            $name = substr($name , 3);
             return array(
-                'function' => 'isOrNot',
+                'function' => 'isOrNot' ,
                 'args' => array(
-                    'not' => true,
+                    'not' => true ,
                     'funcname' => $name
             ));
         }
         // the same if name starts with 'is'
-        elseif (stripos($name, 'is') === 0) {
-            $name = substr($name, 2);
+        elseif (stripos($name , 'is') === 0)
+        {
+            $name = substr($name , 2);
             return array(
-                'function' => 'isOrNot',
+                'function' => 'isOrNot' ,
                 'args' => array(
-                    'not' => false,
+                    'not' => false ,
                     'funcname' => $name
             ));
-        } elseif (stripos($name, 'gt') === 0) {
+        }
+        elseif (stripos($name , 'gt') === 0)
+        {
             return array(
-                'function' => 'eqLtGt',
+                'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'gt',
-                    'warunek' => substr($name, 2)
+                    'func' => 'gt' ,
+                    'warunek' => substr($name , 2)
             ));
-        } elseif (stripos($name, 'lt') === 0) {
+        }
+        elseif (stripos($name , 'lt') === 0)
+        {
             return array(
-                'function' => 'eqLtGt',
+                'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'lt',
-                    'warunek' => substr($name, 2)
+                    'func' => 'lt' ,
+                    'warunek' => substr($name , 2)
             ));
-        } elseif (stripos($name, 'eq') === 0) {
+        }
+        elseif (stripos($name , 'eq') === 0)
+        {
             return array(
-                'function' => 'eqLtGt',
+                'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'eq',
-                    'warunek' => substr($name, 2)
+                    'func' => 'eq' ,
+                    'warunek' => substr($name , 2)
             ));
-        } elseif (stripos($name, 'between') === 0) {
-            $name = substr($name, 7);
+        }
+        elseif (stripos($name , 'between') === 0)
+        {
+            $name = substr($name , 7);
             return array(
-                'function' => 'between',
+                'function' => 'between' ,
                 // explode numbers at front and end of 'and'
-                'args' => explode('and', $name));
-        } elseif (stripos($name, 'minlength') === 0) {
+                'args' => explode('and' , $name));
+        }
+        elseif (stripos($name , 'minlength') === 0)
+        {
             return array(
-                'function' => 'minMaxLength',
+                'function' => 'minMaxLength' ,
                 'args' => array(
-                    'func' => 'min',
-                    'warunek' => substr($name, 9)
+                    'func' => 'min' ,
+                    'warunek' => substr($name , 9)
             ));
-        } elseif (stripos($name, 'maxlength') === 0) {
+        }
+        elseif (stripos($name , 'maxlength') === 0)
+        {
             return array(
-                'function' => 'minMaxLength',
+                'function' => 'minMaxLength' ,
                 'args' => array(
-                    'func' => 'max',
-                    'warunek' => substr($name, 9)
+                    'func' => 'max' ,
+                    'warunek' => substr($name , 9)
             ));
-        } elseif (stripos($name, 'only') === 0) {
+        }
+        elseif (stripos($name , 'only') === 0)
+        {
             return array(
-                'function' => 'only',
-                'args' => substr($name, 4));
+                'function' => 'only' ,
+                'args' => substr($name , 4));
         }
         // if it comes here, function name can't be found
-        else {
+        else
+        {
             throw new StaticValidatorException("Couldn't reslove function name {$name}");
         }
     }
 
-    protected static function eqLtGt($var, array $args) {
+    protected static function eqLtGt($var , array $args)
+    {
         if (is_string($var))
             throw new StaticValidatorException("Value {$var} is string, cast it to numeric");
         if (!is_numeric($var))
             throw new StaticValidatorException("Value {$var} is not numeric");
         if (!is_numeric($args['warunek']))
             throw new StaticValidatorException("Condition {$args['warunek']} is not numeric");
-        switch ($args['func']) {
+        switch ($args['func'])
+        {
             case 'gt':
                 return ($var > $args['warunek']);
                 break;
@@ -171,12 +210,14 @@ class StaticValidator {
         }
     }
 
-    protected static function isOrNot($var, array $args) {
+    protected static function isOrNot($var , array $args)
+    {
         $not = (isset($args['not'])
                 && is_bool($args['not'])) ? $args['not'] : false;
         $funcname = (isset($args['funcname'])) ? (string) $args['funcname'] : '';
         $funcname = strtolower($funcname);
-        switch ($funcname) {
+        switch ($funcname)
+        {
             case 'null':
                 $result = is_null($var);
                 break;
@@ -184,10 +225,12 @@ class StaticValidator {
                 $result = isset($var);
                 break;
             case 'empty':
-                if ($var === 0) {
+                if ($var === 0)
+                {
                     $result = false;
                 }
-                else {
+                else
+                {
                     $result = empty($var);
                 }
                 break;
@@ -209,7 +252,8 @@ class StaticValidator {
      * @param array $arg $arg[0] i $arg[1] numeric type
      * @return bool
      */
-    protected static function between($var, array $arg) {
+    protected static function between($var , array $arg)
+    {
         if (!is_numeric($var))
             throw new StaticValidatorException("Value {$var} is not numeric");
         if (!is_numeric($arg[0]) || !is_numeric($arg[1]))
@@ -223,12 +267,14 @@ class StaticValidator {
      * @param array $args
      * @return bool
      */
-    protected static function minMaxLength($var, array $args) {
+    protected static function minMaxLength($var , array $args)
+    {
         if (!is_string($var))
             throw new StaticValidatorException("Checked value {$var} is not a string");
         if (!is_int($args['warunek']))
             throw new StaticValidatorException("Condition {$args['warunek']} is not integer");
-        switch ($args['func']) {
+        switch ($args['func'])
+        {
             case 'min':
                 return (strlen($var) >= (int) $args['warunek']);
                 break;
@@ -240,35 +286,49 @@ class StaticValidator {
         }
     }
 
-    protected static function only($var, $arg) {
-        switch ($arg) {
+    protected static function only($var , $arg)
+    {
+        switch ($arg)
+        {
             case 'letters':
-                if (function_exists('ctype_alpha')) {
+                if (function_exists('ctype_alpha'))
+                {
                     return ctype_alpha($var);
-                } else {
+                }
+                else
+                {
                     $alg = '/^[A-Z]{1,}$/i';
                 }
                 break;
             case 'numbers':
-                if (function_exists('ctype_digit')) {
+                if (function_exists('ctype_digit'))
+                {
                     return ctype_digit($var);
-                } else {
+                }
+                else
+                {
                     $alg = '/^[0-9]{1,}$/';
                 }
                 break;
             case 'alnums':
-                if (function_exists('ctype_alnum')) {
+                if (function_exists('ctype_alnum'))
+                {
                     return ctype_alnum($var);
-                } else {
+                }
+                else
+                {
                     $alg = '/^[A-Z0-9]{1,}$/i';
                 }
                 break;
             default:
                 throw new StaticValidatorException("Couldn't resolve condition {$arg}");
         }
-        if (preg_match_all($alg, $var, $match) === 1) {
+        if (preg_match_all($alg , $var , $match) === 1)
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
