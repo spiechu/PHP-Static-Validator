@@ -189,11 +189,11 @@ class StaticValidator
     protected static function eqLtGt($var , array $args)
     {
         if (is_string($var))
-            throw new StaticValidatorException("Value {$var} is string, cast it to numeric");
+            throw new StaticValidatorDataTypeMismatchException("Value {$var} is string, cast it to numeric");
         if (!is_numeric($var))
-            throw new StaticValidatorException("Value {$var} is not numeric");
+            throw new StaticValidatorDataTypeMismatchException("Value {$var} is not numeric");
         if (!is_numeric($args['warunek']))
-            throw new StaticValidatorException("Condition {$args['warunek']} is not numeric");
+            throw new StaticValidatorDataTypeMismatchException("Condition {$args['warunek']} is not numeric");
         switch ($args['func'])
         {
             case 'gt':
@@ -255,9 +255,9 @@ class StaticValidator
     protected static function between($var , array $arg)
     {
         if (!is_numeric($var))
-            throw new StaticValidatorException("Value {$var} is not numeric");
+            throw new StaticValidatorDataTypeMismatchException("Value {$var} is not numeric");
         if (!is_numeric($arg[0]) || !is_numeric($arg[1]))
-            throw new StaticValidatorException("Condition {$arg[0]} or {$arg[1]} is not numeric");
+            throw new StaticValidatorDataTypeMismatchException("Condition {$arg[0]} or {$arg[1]} is not numeric");
         return (($var >= $arg[0]) && ($var <= $arg[1]));
     }
 
@@ -270,9 +270,9 @@ class StaticValidator
     protected static function minMaxLength($var , array $args)
     {
         if (!is_string($var))
-            throw new StaticValidatorException("Checked value {$var} is not a string");
+            throw new StaticValidatorDataTypeMismatchException("Checked value {$var} is not a string");
         if (!is_int($args['warunek']))
-            throw new StaticValidatorException("Condition {$args['warunek']} is not integer");
+            throw new StaticValidatorDataTypeMismatchException("Condition {$args['warunek']} is not integer");
         switch ($args['func'])
         {
             case 'min':
