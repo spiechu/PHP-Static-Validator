@@ -36,6 +36,7 @@ class StaticValidatorDataTypeMismatchException extends StaticValidatorException
  * Main class to check if variable satisfies certain conditions.
  *
  * @author Dawid Spiechowicz <spiechu@gmail.com>
+ * @package PHP Static Validator
  */
 class StaticValidator
 {
@@ -47,6 +48,7 @@ class StaticValidator
      * @param string $name name of unexisting method
      * @param array $args given params to unexisting method
      * @return bool true if all conditions satisfied
+     * @throws StaticValidatorException when called function not starts with check_ or function name cannot be recognized
      */
     public static function __callStatic($name , $args)
     {
@@ -93,6 +95,7 @@ class StaticValidator
      * Searches for known validation functions.
      * @param string $name name to search
      * @return array assoc table with func name and optional parameters
+     * @throws StaticValidatorException when cannot resolve function name
      */
     protected static function extractFunction($name)
     {
@@ -186,6 +189,13 @@ class StaticValidator
         }
     }
 
+    /**
+     * @param numeric $var value to check
+     * @param array $args condition type and value to check against
+     * @return bool
+     * @throws StaticValidatorDataTypeMismatchException when $var or $args['warunek'] is not numeric
+     * @throws StaticValidatorException when $args['func'] is other than eq, lt, gt
+     */
     protected static function eqLtGt($var , array $args)
     {
         if (is_string($var))
