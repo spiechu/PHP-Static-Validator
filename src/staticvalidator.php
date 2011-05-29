@@ -220,6 +220,13 @@ class StaticValidator
         }
     }
 
+    /**
+     *
+     * @param mixed $var value to check type
+     * @param array $args array with datatype to check and optional not to reverse returned bool value
+     * @return bool
+     * @throws StaticValidatorException when cannot recognize datatype name to check
+     */
     protected static function isOrNot($var , array $args)
     {
         $not = (isset($args['not'])
