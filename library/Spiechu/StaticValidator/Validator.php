@@ -98,7 +98,7 @@ class Validator
                 'function' => 'isOrNot' ,
                 'args' => array(
                     'not' => true ,
-                    'funcname' => $name
+                    'subfunc' => $name
             ));
         }
         // the same if name starts with 'is'
@@ -109,7 +109,7 @@ class Validator
                 'function' => 'isOrNot' ,
                 'args' => array(
                     'not' => false ,
-                    'funcname' => $name
+                    'subfunc' => $name
             ));
         }
         elseif (stripos($name , 'gt') === 0)
@@ -117,7 +117,7 @@ class Validator
             return array(
                 'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'gt' ,
+                    'subfunc' => 'gt' ,
                     'warunek' => substr($name , 2)
             ));
         }
@@ -126,7 +126,7 @@ class Validator
             return array(
                 'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'lt' ,
+                    'subfunc' => 'lt' ,
                     'warunek' => substr($name , 2)
             ));
         }
@@ -135,7 +135,7 @@ class Validator
             return array(
                 'function' => 'eqLtGt' ,
                 'args' => array(
-                    'func' => 'eq' ,
+                    'subfunc' => 'eq' ,
                     'warunek' => substr($name , 2)
             ));
         }
@@ -152,7 +152,7 @@ class Validator
             return array(
                 'function' => 'minMaxLength' ,
                 'args' => array(
-                    'func' => 'min' ,
+                    'subfunc' => 'min' ,
                     'warunek' => substr($name , 9)
             ));
         }
@@ -161,7 +161,7 @@ class Validator
             return array(
                 'function' => 'minMaxLength' ,
                 'args' => array(
-                    'func' => 'max' ,
+                    'subfunc' => 'max' ,
                     'warunek' => substr($name , 9)
             ));
         }
@@ -169,7 +169,9 @@ class Validator
         {
             return array(
                 'function' => 'only' ,
-                'args' => substr($name , 4));
+                'args' => array(
+                    'subfunc' => substr($name , 4)
+            ));
         }
         // if it comes here, function name can't be found
         else
@@ -193,7 +195,7 @@ class Validator
             throw new ValidatorDataTypeMismatchException("Value {$var} is not numeric");
         if (!is_numeric($args['warunek']))
             throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not numeric");
-        switch ($args['func'])
+        switch ($args['subfunc'])
         {
             case 'gt':
                 return ($var > $args['warunek']);
@@ -219,9 +221,7 @@ class Validator
     {
         $not = (isset($args['not'])
                 && is_bool($args['not'])) ? $args['not'] : false;
-        $funcname = (isset($args['funcname'])) ? (string) $args['funcname'] : '';
-        $funcname = strtolower($funcname);
-        switch ($funcname)
+        switch ($args['subfunc'])
         {
             case 'null':
                 $result = is_null($var);
@@ -278,7 +278,7 @@ class Validator
             throw new ValidatorDataTypeMismatchException("Checked value {$var} is not a string");
         if (!is_int($args['warunek']))
             throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not integer");
-        switch ($args['func'])
+        switch ($args['funcname'])
         {
             case 'min':
                 return (strlen($var) >= (int) $args['warunek']);
@@ -291,51 +291,35 @@ class Validator
         }
     }
 
-    protected static function only($var , $arg)
+    protected static function only($var , array $args)
     {
-        switch ($arg)
+        switch ($args['funcname'])
         {
             case 'letters':
                 if (function_exists('ctype_alpha'))
-                {
                     return ctype_alpha($var);
-                }
                 else
-                {
                     $alg = '/^[A-Z]{1,}$/i';
-                }
                 break;
             case 'numbers':
                 if (function_exists('ctype_digit'))
-                {
                     return ctype_digit($var);
-                }
                 else
-                {
                     $alg = '/^[0-9]{1,}$/';
-                }
                 break;
             case 'alnums':
                 if (function_exists('ctype_alnum'))
-                {
                     return ctype_alnum($var);
-                }
                 else
-                {
                     $alg = '/^[A-Z0-9]{1,}$/i';
-                }
                 break;
             default:
-                throw new ValidatorException("Couldn't resolve condition {$arg}");
+                throw new ValidatorException("Couldn't resolve condition {$args['funcname']}");
         }
         if (preg_match_all($alg , $var , $match) === 1)
-        {
             return true;
-        }
         else
-        {
             return false;
-        }
     }
 
 }
