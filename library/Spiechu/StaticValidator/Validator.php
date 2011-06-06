@@ -178,8 +178,8 @@ class Validator
      * @param numeric $var value to check
      * @param array $args condition type and value to check against
      * @return bool
-     * @throws StaticValidatorDataTypeMismatchException when $var or $args['warunek'] is not numeric
-     * @throws StaticValidatorException when $args['func'] is other than eq, lt, gt
+     * @throws StaticValidatorDataTypeMismatchException when $var or $args['condition'] is not numeric
+     * @throws StaticValidatorException when $args['subfunc'] is other than eq, lt, gt
      */
     protected static function eqLtGt($var , array $args)
     {
@@ -257,7 +257,7 @@ class Validator
     }
 
     /**
-     * Checks if $var string is between given lenght.
+     * Checks if $var string is between given length.
      * @param string $var to check
      * @param array $args
      * @return bool
