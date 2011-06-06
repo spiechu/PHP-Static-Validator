@@ -1,5 +1,10 @@
 <?php
 
+namespace Spiechu\StaticValidator;
+
+use Spiechu\StaticValidator\Exceptions\ValidatorException;
+use Spiechu\StaticValidator\Exceptions\ValidatorDataTypeMismatchException;
+
 /**
  * Copyright 2011 Dawid Spiechowicz
  *
@@ -17,28 +22,12 @@
  */
 
 /**
- * Dummy Exception extension.
- */
-class StaticValidatorException extends Exception
-{
-    
-}
-
-/**
- * Thrown when args or checked variables have wrong types.
- */
-class StaticValidatorDataTypeMismatchException extends StaticValidatorException
-{
-    
-}
-
-/**
  * Main class to check if variable satisfies certain conditions.
  *
  * @author Dawid Spiechowicz <spiechu@gmail.com>
  * @package PHP Static Validator
  */
-class StaticValidator
+class Validator
 {
 
     /**
@@ -61,7 +50,7 @@ class StaticValidator
                 $funcName = self::extractFunction($funcName);
                 if (!method_exists(__CLASS__ , $funcName['function']))
                 {
-                    throw new StaticValidatorException("Function {$funcName} doesn't exist!");
+                    throw new ValidatorException("Function {$funcName} doesn't exist!");
                 }
                 // check if given params are array of values to check
                 if (is_array($args[0]))
@@ -88,7 +77,7 @@ class StaticValidator
             return true;
         }
         // catches wrong function name at start
-        throw new StaticValidatorException("Unknown function {$name}");
+        throw new ValidatorException("Unknown function {$name}");
     }
 
     /**
@@ -185,7 +174,7 @@ class StaticValidator
         // if it comes here, function name can't be found
         else
         {
-            throw new StaticValidatorException("Couldn't reslove function name {$name}");
+            throw new ValidatorException("Couldn't reslove function name {$name}");
         }
     }
 
@@ -199,11 +188,11 @@ class StaticValidator
     protected static function eqLtGt($var , array $args)
     {
         if (is_string($var))
-            throw new StaticValidatorDataTypeMismatchException("Value {$var} is string, cast it to numeric");
+            throw new ValidatorDataTypeMismatchException("Value {$var} is string, cast it to numeric");
         if (!is_numeric($var))
-            throw new StaticValidatorDataTypeMismatchException("Value {$var} is not numeric");
+            throw new ValidatorDataTypeMismatchException("Value {$var} is not numeric");
         if (!is_numeric($args['warunek']))
-            throw new StaticValidatorDataTypeMismatchException("Condition {$args['warunek']} is not numeric");
+            throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not numeric");
         switch ($args['func'])
         {
             case 'gt':
@@ -216,12 +205,11 @@ class StaticValidator
                 return ($var == $args['warunek']);
                 break;
             default:
-                throw new StaticValidatorException("Couldn't resolve condition (eq|lt|gt) at {$args['func']}");
+                throw new ValidatorException("Couldn't resolve condition (eq|lt|gt) at {$args['func']}");
         }
     }
 
     /**
-     *
      * @param mixed $var value to check type
      * @param array $args array with datatype to check and optional not to reverse returned bool value
      * @return bool
@@ -258,7 +246,7 @@ class StaticValidator
                 $result = is_string($var);
                 break;
             default:
-                throw new StaticValidatorException("Couldn't resolve argument {$funcname}");
+                throw new ValidatorException("Couldn't resolve argument {$funcname}");
         }
         return ($not === true) ? !$result : $result;
     }
@@ -272,9 +260,9 @@ class StaticValidator
     protected static function between($var , array $arg)
     {
         if (!is_numeric($var))
-            throw new StaticValidatorDataTypeMismatchException("Value {$var} is not numeric");
+            throw new ValidatorDataTypeMismatchException("Value {$var} is not numeric");
         if (!is_numeric($arg[0]) || !is_numeric($arg[1]))
-            throw new StaticValidatorDataTypeMismatchException("Condition {$arg[0]} or {$arg[1]} is not numeric");
+            throw new ValidatorDataTypeMismatchException("Condition {$arg[0]} or {$arg[1]} is not numeric");
         return (($var >= $arg[0]) && ($var <= $arg[1]));
     }
 
@@ -287,9 +275,9 @@ class StaticValidator
     protected static function minMaxLength($var , array $args)
     {
         if (!is_string($var))
-            throw new StaticValidatorDataTypeMismatchException("Checked value {$var} is not a string");
+            throw new ValidatorDataTypeMismatchException("Checked value {$var} is not a string");
         if (!is_int($args['warunek']))
-            throw new StaticValidatorDataTypeMismatchException("Condition {$args['warunek']} is not integer");
+            throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not integer");
         switch ($args['func'])
         {
             case 'min':
@@ -299,7 +287,7 @@ class StaticValidator
                 return (strlen($var) <= (int) $args['warunek']);
                 break;
             default:
-                throw new StaticValidatorException("Couldn't resolve condition {$args['func']}");
+                throw new ValidatorException("Couldn't resolve condition {$args['func']}");
         }
     }
 
@@ -338,7 +326,7 @@ class StaticValidator
                 }
                 break;
             default:
-                throw new StaticValidatorException("Couldn't resolve condition {$arg}");
+                throw new ValidatorException("Couldn't resolve condition {$arg}");
         }
         if (preg_match_all($alg , $var , $match) === 1)
         {
