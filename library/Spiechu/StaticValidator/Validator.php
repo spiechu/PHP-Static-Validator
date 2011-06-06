@@ -112,7 +112,7 @@ class Validator
                 'function' => 'eqLtGt' ,
                 'args' => array(
                     'subfunc' => 'gt' ,
-                    'warunek' => substr($name , 2)
+                    'condition' => substr($name , 2)
             ));
         }
         elseif (stripos($name , 'lt') === 0)
@@ -121,7 +121,7 @@ class Validator
                 'function' => 'eqLtGt' ,
                 'args' => array(
                     'subfunc' => 'lt' ,
-                    'warunek' => substr($name , 2)
+                    'condition' => substr($name , 2)
             ));
         }
         elseif (stripos($name , 'eq') === 0)
@@ -130,7 +130,7 @@ class Validator
                 'function' => 'eqLtGt' ,
                 'args' => array(
                     'subfunc' => 'eq' ,
-                    'warunek' => substr($name , 2)
+                    'condition' => substr($name , 2)
             ));
         }
         elseif (stripos($name , 'between') === 0)
@@ -147,7 +147,7 @@ class Validator
                 'function' => 'minMaxLength' ,
                 'args' => array(
                     'subfunc' => 'min' ,
-                    'warunek' => substr($name , 9)
+                    'condition' => substr($name , 9)
             ));
         }
         elseif (stripos($name , 'maxlength') === 0)
@@ -156,7 +156,7 @@ class Validator
                 'function' => 'minMaxLength' ,
                 'args' => array(
                     'subfunc' => 'max' ,
-                    'warunek' => substr($name , 9)
+                    'condition' => substr($name , 9)
             ));
         }
         elseif (stripos($name , 'only') === 0)
@@ -187,21 +187,21 @@ class Validator
             throw new ValidatorDataTypeMismatchException("Value {$var} is string, cast it to numeric");
         if (!is_numeric($var))
             throw new ValidatorDataTypeMismatchException("Value {$var} is not numeric");
-        if (!is_numeric($args['warunek']))
-            throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not numeric");
+        if (!is_numeric($args['condition']))
+            throw new ValidatorDataTypeMismatchException("Condition {$args['condition']} is not numeric");
         switch ($args['subfunc'])
         {
             case 'gt':
-                return ($var > $args['warunek']);
+                return ($var > $args['condition']);
                 break;
             case 'lt':
-                return ($var < $args['warunek']);
+                return ($var < $args['condition']);
                 break;
             case 'eq':
-                return ($var == $args['warunek']);
+                return ($var == $args['condition']);
                 break;
             default:
-                throw new ValidatorException("Couldn't resolve condition (eq|lt|gt) at {$args['func']}");
+                throw new ValidatorException("Couldn't resolve argument (eq|lt|gt) at {$args['subfunc']}");
         }
     }
 
@@ -236,7 +236,7 @@ class Validator
                 $result = is_string($var);
                 break;
             default:
-                throw new ValidatorException("Couldn't resolve argument {$funcname}");
+                throw new ValidatorException("Couldn't resolve argument {$args['subfunc']}");
         }
         return ($not === true) ? !$result : $result;
     }
@@ -266,24 +266,24 @@ class Validator
     {
         if (!is_string($var))
             throw new ValidatorDataTypeMismatchException("Checked value {$var} is not a string");
-        if (!is_int($args['warunek']))
-            throw new ValidatorDataTypeMismatchException("Condition {$args['warunek']} is not integer");
-        switch ($args['funcname'])
+        if (!is_int($args['condition']))
+            throw new ValidatorDataTypeMismatchException("Condition {$args['condition']} is not integer");
+        switch ($args['subfunc'])
         {
             case 'min':
-                return (strlen($var) >= (int) $args['warunek']);
+                return (strlen($var) >= (int) $args['condition']);
                 break;
             case 'max':
-                return (strlen($var) <= (int) $args['warunek']);
+                return (strlen($var) <= (int) $args['condition']);
                 break;
             default:
-                throw new ValidatorException("Couldn't resolve condition {$args['func']}");
+                throw new ValidatorException("Couldn't resolve condition {$args['subfunc']}");
         }
     }
 
     protected static function only($var , array $args)
     {
-        switch ($args['funcname'])
+        switch ($args['subfunc'])
         {
             case 'letters':
                 if (function_exists('ctype_alpha'))
@@ -304,7 +304,7 @@ class Validator
                     $alg = '/^[A-Z0-9]{1,}$/i';
                 break;
             default:
-                throw new ValidatorException("Couldn't resolve condition {$args['funcname']}");
+                throw new ValidatorException("Couldn't resolve condition {$args['subfunc']}");
         }
         if (preg_match_all($alg , $var , $match) === 1)
             return true;
