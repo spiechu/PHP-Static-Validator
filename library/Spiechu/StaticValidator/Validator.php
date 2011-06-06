@@ -49,9 +49,7 @@ class Validator
             {
                 $funcName = self::extractFunction($funcName);
                 if (!method_exists(__CLASS__ , $funcName['function']))
-                {
                     throw new ValidatorException("Function {$funcName} doesn't exist!");
-                }
                 // check if given params are array of values to check
                 if (is_array($args[0]))
                 {
@@ -59,18 +57,14 @@ class Validator
                     {
                         // firing up extracted function name (if args are array)
                         if (self::$funcName['function']($arg , $funcName['args']) == false)
-                        {
                             return false;
-                        }
                     }
                 }
                 // firing up extracted function name (if args are NOT array)
                 else
                 {
                     if (self::$funcName['function']($args[0] , $funcName['args']) == false)
-                    {
                         return false;
-                    }
                 }
             }
             // all extracted functions passed, args are valid
@@ -231,13 +225,9 @@ class Validator
                 break;
             case 'empty':
                 if ($var === 0)
-                {
                     $result = false;
-                }
                 else
-                {
                     $result = empty($var);
-                }
                 break;
             case 'int':
                 $result = is_int($var);
