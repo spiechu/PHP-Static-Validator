@@ -6,9 +6,12 @@ Class primarily created to find some useful purpose for `__callStatic` function 
 
 Since Validator uses namespaces, it is required to use `SplClassLoader.php` (You will find it in `tests` directory). It is standard autoloading class [more info here](http://groups.google.com/group/php-standards/web/psr-0-final-proposal?pli=1). You have to register Validator classes:
 
-    require_once('SplClassLoader.php');
-    $classLoader = new SplClassLoader('Spiechu\StaticValidator' , 'library');
-    $classLoader->register();
+```php
+<?php
+require_once('SplClassLoader.php');
+$classLoader = new SplClassLoader('Spiechu\StaticValidator' , 'library');
+$classLoader->register();
+```
 
 ## Documentation
 
