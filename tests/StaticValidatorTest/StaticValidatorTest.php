@@ -15,6 +15,7 @@ use Spiechu\StaticValidator\Validator;
 
 /**
  * @author Dawid Spiechowicz <spiechu@gmail.com>
+ * @package PHP Static Validator
  * @since 0.1
  */
 class StaticValidatorTest extends \PHPUnit_Framework_TestCase
