@@ -6,6 +6,7 @@ php:
 
 before_script:
   - pear channel-discover pear.phpunit.de
+  - pear config-set auto_discover 1
   - pear install --alldeps PHP_CodeSniffer
   - pear install --alldeps pear.phpunit.de/phpcpd
   - pear install --alldeps pear.phpunit.de/phploc
