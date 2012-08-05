@@ -7,8 +7,12 @@ php:
 before_script:
   - pear channel-discover pear.phpunit.de
   - pear install --alldeps PHP_CodeSniffer
+  - pear install --alldeps pear.phpunit.de/phpcpd
+  - pear install --alldeps pear.phpunit.de/phploc
   - phpenv rehash
   - phpcs --standard=PSR2 src
+  - phpcpd src
+  - phploc src
   - composer install
 
 script: phpunit --coverage-text
