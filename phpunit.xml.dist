@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="tests/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="PHP Static Validator Test Suite">
+            <directory>tests/StaticValidatorTest/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/Spiechu/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
