@@ -1,6 +1,6 @@
 {
     "name": "spiechu/php-static-validator",
-    "description": "Static Validator's class is designed to check if given variable or array of variables meet certain conditions",
+    "description": "Class designed to check if given variable or array of variables meet certain conditions",
     "type": "library",
     "license": "MIT",
     "keywords": ["validaton", "type checking"],
