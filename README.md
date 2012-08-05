@@ -32,7 +32,7 @@ We can distinguish three main components in PHP Static Validator:
 2. regular expressions based (for eg. onlyLetters, onlyNumbers)
 3. magic functions (for eg. eq3, gt3, lt3, minLength5)
 
-Highly recommended way of constructing magic method name is from broadest condition to narrowest. For eg. `notNull` is broader condition than `isInt`, which is broader than `gt5`.
+Highly recommended way of constructing magic method name is from broadest test condition to narrowest. For eg. `notNull` is broader condition than `isInt`, which is broader than `gt5`.
 
 ### Complete list of functions
 1. Wrappers:
