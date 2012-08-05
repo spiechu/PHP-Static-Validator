@@ -17,7 +17,7 @@ No external libraries required.
 
 ## Documentation
 
-Static Validator's class is designed to check if given variable or table of variables meet certain conditions.
+Static Validator's class is designed to check if given variable or array of variables meet certain conditions.
 
 Basically every check method starts with `check` word, and then You can use separator `_` and type next condition which tested variable is supposed to meet.
 
