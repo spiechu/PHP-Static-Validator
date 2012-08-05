@@ -48,30 +48,46 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::__callStatic
+     */
     public function testValidatorWontStart()
     {
         $this->setExpectedException('Spiechu\StaticValidator\Exceptions\ValidatorException');
         Validator::unknown('dummy');
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::__callStatic
+     */
     public function testValidatorWontFindFunction()
     {
         $this->setExpectedException('Spiechu\StaticValidator\Exceptions\ValidatorException');
         Validator::check('abc');
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::__callStatic
+     * @covers Spiechu\StaticValidator\Validator::extractFunction
+     */
     public function testValidatorWontResolveFunctionName()
     {
         $this->setExpectedException('Spiechu\StaticValidator\Exceptions\ValidatorException');
         Validator::check_('abc');
     }
-
+    
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testIsSetWillRaiseError()
     {
         $this->setExpectedException('PHPUnit_Framework_Error');
         $this->assertFalse(Validator::check_isSet($unset));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testIsOrNotSet()
     {
         $this->suppressNotices();
@@ -82,6 +98,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_notSet(self::EMPTY_VALUE));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testEmpty()
     {
         $this->assertTrue(Validator::check_isEmpty(self::EMPTY_VALUE));
@@ -90,6 +109,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_notEmpty(self::EMPTY_VALUE));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testNull()
     {
         $this->assertTrue(Validator::check_isNull(self::NULL_VALUE));
@@ -98,6 +120,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_notNull(self::NULL_VALUE));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testInt()
     {
         $this->assertTrue(Validator::check_isInt(self::INT_POS));
@@ -106,6 +131,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(Validator::check_notInt(self::STRING_NUMBERS));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testZeroValue()
     {
         $this->assertTrue(Validator::check_isInt(self::INT_ZERO));
@@ -116,6 +144,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_isEmpty(self::INT_ZERO));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::isOrNot
+     */
     public function testString()
     {
         $this->assertTrue(Validator::check_isString(self::STRING_ADDITIONAL_CHARS));
@@ -124,6 +155,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_notString(self::STRING_ADDITIONAL_CHARS));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::eqLtGt
+     */
     public function testGtCondition()
     {
         $this->assertFalse(Validator::check_gt1(1));
@@ -135,6 +169,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_gt1('2'));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::eqLtGt
+     */
     public function testLtCondition()
     {
         $this->assertFalse(Validator::check_lt1(1));
@@ -146,6 +183,9 @@ class StaticValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Validator::check_lt1('2'));
     }
 
+    /**
+     * @covers Spiechu\StaticValidator\Validator::eqLtGt
+     */
     public function testEqCondition()
     {
         $this->assertTrue(Validator::check_eq1(1));
