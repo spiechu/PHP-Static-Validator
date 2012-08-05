@@ -1,15 +1,23 @@
 <?php
 
+/*
+ * This file is part of the PHP Static Validator package.
+ *
+ * (c) Dawid Spiechowicz <spiechu@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Spiechu\StaticValidatorTest;
+
 use Spiechu\StaticValidator\Validator;
-use \Exception;
 
-require_once 'PHPUnit/Framework.php';
-require_once 'SplClassLoader.php';
-
-$classLoader = new SplClassLoader('Spiechu\StaticValidator' , '../library');
-$classLoader->register();
-
-class StaticValidatorTestCase extends PHPUnit_Framework_TestCase
+/**
+ * @author Dawid Spiechowicz <spiechu@gmail.com>
+ * @since 0.1
+ */
+class StaticValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $errorLevel = null;
@@ -32,12 +40,9 @@ class StaticValidatorTestCase extends PHPUnit_Framework_TestCase
 
     protected function endNoticeSuppression()
     {
-        if ($this->errorLevel === null)
-        {
+        if ($this->errorLevel === null) {
             throw new Exception('Cant end notices suppression');
-        }
-        else
-        {
+        } else {
             error_reporting($this->errorLevel);
         }
     }
