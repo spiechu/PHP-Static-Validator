@@ -2,9 +2,12 @@
 
 Class primarily created to find some useful purpose for `__callStatic` function new in PHP 5.3.0. With PHP StaticValidator You can chain multiple conditions and checked value is being tested one by one.
 
+Travis build status:
+[![Build Status](https://secure.travis-ci.org/spiechu/PHP-Static-Validator.png)](http://travis-ci.org/spiechu/PHP-Static-Validator)
+
 ## Installation
 
-Since Validator uses namespaces, it is required to use class autoloader, for example `SplClassLoader.php` (You will find it in `tests` directory). It is standard autoloading class [more info here](http://groups.google.com/group/php-standards/web/psr-0-final-proposal?pli=1). You have to register Validator classes:
+Since Validator uses namespaces, it is required to use class autoloader, for example `SplClassLoader.php` [more info here](http://groups.google.com/group/php-standards/web/psr-0-final-proposal?pli=1). You have to register Validator classes:
 
 ```php
 <?php
